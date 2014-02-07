@@ -24,10 +24,10 @@
 
 //! These are user defined include files
 //! Included in double quotes - the path to find these has to be given at compile time
+#include <iostream>
 #include "render.hpp"
 #include "cs296_base.hpp"
 #include "callbacks.hpp"
-
 //! GLUI is the library used for drawing the GUI
 //! Learn more about GLUI by reading the GLUI documentation
 //! Learn to use preprocessor diectives to make your code portable
@@ -42,7 +42,7 @@
 //! Read about the use of include files in C++
 #include <cstdio>
 
-
+using namespace std;
 //! Notice the use of extern. Why is it used here?
 namespace cs296
 {
@@ -120,33 +120,53 @@ int main(int argc, char** argv)
   
   entry = sim;
   test = entry->create_fcn();
+  
+ 
 
   //! This initializes GLUT
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-  glutInitWindowSize(width, height);
+  //glutInit(&argc, argv);
+  //glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+  //glutInitWindowSize(width, height);
 
   char title[50];
   sprintf(title, "CS296 Base Code. Running on Box2D %d.%d.%d", b2_version.major, b2_version.minor, b2_version.revision);
-  main_window = glutCreateWindow(title);
+  //main_window = glutCreateWindow(title);
 
   //! Here we setup all the callbacks we need
   //! Some are set via GLUI
-  GLUI_Master.set_glutReshapeFunc(callbacks_t::resize_cb);  
-  GLUI_Master.set_glutKeyboardFunc(callbacks_t::keyboard_cb);
-  GLUI_Master.set_glutSpecialFunc(callbacks_t::keyboard_special_cb);
-  GLUI_Master.set_glutMouseFunc(callbacks_t::mouse_cb);
+  //GLUI_Master.set_glutReshapeFunc(callbacks_t::resize_cb);  
+  //GLUI_Master.set_glutKeyboardFunc(callbacks_t::keyboard_cb);
+  //GLUI_Master.set_glutSpecialFunc(callbacks_t::keyboard_special_cb);
+  //GLUI_Master.set_glutMouseFunc(callbacks_t::mouse_cb);
   //! Others are set directly
-  glutDisplayFunc(callbacks_t::display_cb);
-  glutMotionFunc(callbacks_t::mouse_motion_cb);
-  glutKeyboardUpFunc(callbacks_t::keyboard_up_cb); 
-  glutTimerFunc(frame_period, callbacks_t::timer_cb, 0);
+  //glutDisplayFunc(callbacks_t::display_cb);
+  //glutMotionFunc(callbacks_t::mouse_motion_cb);
+  //glutKeyboardUpFunc(callbacks_t::keyboard_up_cb); 
+  //glutTimerFunc(frame_period, callbacks_t::timer_cb, 0);
 
   //! We create the GLUI user interface
-  create_glui_ui();
+  //create_glui_ui();
 
   //! Enter the infinite GLUT event loop
-  glutMainLoop();
+  //glutMainLoop();
+   base_sim_t test_base;
+ 
+  settings_t* settings_new=new settings_t;
+  
+  float duration=0;
+  
+  for(int i=0;i<150;i++)
+  {
+	  test->step(settings_new);
+	 //test->step(&settings);
+	  const b2World* W=test->get_world(); 
+	 const b2Profile p=W->GetProfile();
+	  duration=duration+ p.step;
+  }
+  
+  float answer=duration/150;
+  cout<<"The average time for a 150 iterations is:"<<answer<<" ms"<<endl;
+  cout<<"This is from the Box2D simulation for CS296 Lab 04. It has been made by Shivam Garg from Group 13"<<endl;
   
   return 0;
 }

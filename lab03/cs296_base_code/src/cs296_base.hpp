@@ -150,12 +150,15 @@ namespace cs296
   class base_sim_t : public b2ContactListener
   {
   public:
-    
+   
     base_sim_t();
 
     //! Virtual destructors - amazing objects. Why are these necessary?
     virtual ~base_sim_t();
-    
+	 const b2World* get_world(void)
+	 {
+			return m_world;
+	 }
     void set_text_line(int32 line) { m_text_line = line; }
     void draw_title(int x, int y, const char *string);
     
