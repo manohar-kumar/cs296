@@ -28,6 +28,7 @@
 #include "render.hpp"
 #include "cs296_base.hpp"
 #include "callbacks.hpp"
+#include <sys/time.h>
 //! GLUI is the library used for drawing the GUI
 //! Learn more about GLUI by reading the GLUI documentation
 //! Learn to use preprocessor diectives to make your code portable
@@ -121,8 +122,8 @@ int main(int argc, char** argv)
   entry = sim;
   test = entry->create_fcn();
   
- 
-
+  int no_of_iterations ;
+  cin>> no_of_iterations;
   //! This initializes GLUT
   //glutInit(&argc, argv);
   //glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -153,20 +154,36 @@ int main(int argc, char** argv)
  
   settings_t* settings_new=new settings_t;
   
-  float duration=0;
+  float duration=0,collision_time=0 ,velocity_updates =0 ,position_updates =0 ;
   
-  for(int i=0;i<150;i++)
+  timeval t,t1;
+  gettimeofday(&t,NULL);
+  
+  for(int i=0;i< no_of_iterations;i++)
   {
 	  test->step(settings_new);
 	 //test->step(&settings);
 	  const b2World* W=test->get_world(); 
 	 const b2Profile p=W->GetProfile();
 	  duration=duration+ p.step;
+	  collision_time+=p.collide ;
+	  velocity_updates+=p.solveVelocity;
+	  position_updates += p.solvePosition ;
   }
+  gettimeofday(&t1,NULL);
   
-  float answer=duration/150;
-  cout<<"The average time for a 150 iterations is:"<<answer<<" ms"<<endl;
-  cout<<"This is from the Box2D simulation for CS296 Lab 04. It has been made by Shivam Garg from Group 13"<<endl;
+  duration=duration/no_of_iterations ;
+  collision_time =collision_time/no_of_iterations;
+  velocity_updates = velocity_updates/no_of_iterations ;
+  position_updates = position_updates/no_of_iterations ;
+  float answer= (t1.tv_sec-t.tv_sec)*1000;
+  answer+=(t1.tv_usec-t.tv_usec)/1000;
+  cout<<"Number of Iterations : "<<no_of_iterations<<endl;
+  cout<<"Average time per step is "<<duration<<" ms"<<endl;
+  cout<<" Average time for collisions is "<<collision_time<<" ms"<<endl;
+  cout<<"Average time for velocity updates is "<<velocity_updates<<" ms"<<endl;
+  cout<<"Average time for position updates is "<<position_updates<<" ms"<<endl;
+  cout<<"\n"<<"Total loop time is "<<answer<<" ms"<<endl;
   
   return 0;
 }
